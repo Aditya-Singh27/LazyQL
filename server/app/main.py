@@ -12,9 +12,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://lazy-ql-git-main-aditya-aryan-26-projects1.vercel.app",
-        "https://lazy-ql.vercel.app",
+        "https://lazyql.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
