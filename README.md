@@ -28,11 +28,11 @@ It supports **SQLite and PostgreSQL**, allowing users to connect a database, aut
 
 # 🔗 Live Demo
 
-🌐 **Frontend:** https://lazy-ql.vercel.app
+🌐 **Frontend:** https://lazyql.vercel.app
 
-🔧 **Backend API:** https://lazyql.onrender.com
+🔧 **Backend API:** https://lazyql-n4jt.onrender.com
 
-📚 **API Documentation:** https://lazyql.onrender.com/docs
+📚 **API Documentation:** https://lazyql-n4jt.onrender.com/docs
 
 ---
 
