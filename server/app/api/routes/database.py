@@ -1,5 +1,3 @@
-from app.database.safety import validate_readonly_sql
-from app.database.exceptions import UnsafeQueryError
 import shutil
 import tempfile
 from pathlib import Path
@@ -13,7 +11,8 @@ from fastapi import (
 )
 
 from app.database.connection import create_database_adapter
-from app.database.exceptions import DatabaseConnectionError
+from app.database.exceptions import DatabaseConnectionError, UnsafeQueryError
+from app.database.safety import validate_readonly_sql
 from app.database.session_manager import session_manager
 from app.models.database import DatabaseConfig
 from app.models.schema import DatabaseSchema
@@ -39,14 +38,19 @@ def get_schema(session_id: str):
         db = session_manager.get_session(
             session_id
         )
-
     except KeyError as exc:
         raise HTTPException(
             status_code=404,
-            detail="Database session not found",
+            detail="Database session not found. Please connect or re-upload your database.",
         ) from exc
 
-    return db.get_schema()
+    try:
+        return db.get_schema()
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to retrieve database schema: {str(exc)}",
+        ) from exc
 
 
 @router.post(
@@ -61,7 +65,7 @@ def execute_query(request: QueryRequest):
     except KeyError as exc:
         raise HTTPException(
             status_code=404,
-            detail="Database session not found",
+            detail="Database session not found. Please connect or re-upload your database.",
         ) from exc
 
     try:
@@ -72,7 +76,13 @@ def execute_query(request: QueryRequest):
             detail=str(exc),
         ) from exc
 
-    result = db.execute_query(request.sql)
+    try:
+        result = db.execute_query(request.sql)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Query execution failed: {str(exc)}",
+        ) from exc
 
     return QueryResponse(
         success=True,
